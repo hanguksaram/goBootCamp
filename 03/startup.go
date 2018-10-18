@@ -11,10 +11,20 @@ import (
 type Startup struct{}
 
 func (st *Startup) Initialize() {
+	//factories
+	mwFactory := &middleware.MiddlewareFactory{}
 	mainConroller := &controllers.MainController{}
+
+	//preparing middlewares
+	mwCors := mwFactory.PrepareMiddleware(middleware.AllowCors)
+
+	//controllers initializing
 	handlers := mainConroller.InitController()
-	middleware := lib.CreateNewMiddleware(middleware.CustomMiddleWare1)
-	middlewaredHandlers := lib.ApplyMiddleware(handlers, middleware)
+
+	//create httprequest handling chaing
+	middlewaredHandlers := lib.ApplyMiddleware(handlers, mwCors)
+
+	//init handlers
 	for _, hn := range middlewaredHandlers {
 		http.Handle(hn.Route, hn.Handler)
 	}

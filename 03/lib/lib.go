@@ -3,7 +3,7 @@ package lib
 import "net/http"
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
-type HandlersStorage map[string]http.HandlerFunc
+type MiddlewareChunk func(w http.ResponseWriter, r *http.Request) bool
 type RequestHandler struct {
 	Route         string
 	Handler       http.HandlerFunc
