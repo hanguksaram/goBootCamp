@@ -1,20 +1,18 @@
 package main
 
 import (
-		"github.com/julienschmidt/httprouter"
-	"html/template"
-		"net/http"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
-var tpl *template.Template
-var s some
 func init() {
-	tpl = template.Must(template.ParseGlob("templates/*"))
+
 }
 
 func main() {
+	authCntrl := AuthController{}
 	mux := httprouter.New()
-	s.initRoutes(mux)
-	http.ListenAndServe(":8080", mux)
+	authCntrl.initAuthController(mux)
+	http.ListenAndServe(":5000", mux)
 }
-
