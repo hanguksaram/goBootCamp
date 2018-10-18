@@ -28,11 +28,13 @@ func main() {
 	}
 	http.ListenAndServe(":8080", nil)
 }
-func customMiddleWare1(w http.ResponseWriter, r *http.Request) {
+func customMiddleWare1(w http.ResponseWriter, r *http.Request) bool {
 	fmt.Fprintln(w, "CUstom middleware1")
+	return false
 }
-func customMiddleWare2(w http.ResponseWriter, r *http.Request) {
+func customMiddleWare2(w http.ResponseWriter, r *http.Request) bool {
 	fmt.Fprintln(w, "CUstom middleware2")
+	return false
 }
 func applyMiddleware(handlers map[handleRoute]http.HandlerFunc, middlewares ...Middleware) map[handleRoute]http.HandlerFunc {
 	for key, hn := range handlers {
@@ -44,13 +46,17 @@ func applyMiddleware(handlers map[handleRoute]http.HandlerFunc, middlewares ...M
 
 	return handlers
 }
-func createNewMiddleware(middleWare http.HandlerFunc) Middleware {
+func createNewMiddleware(middleWare func(w http.ResponseWriter, r *http.Request) bool) Middleware {
 
 	middleware := func(next http.HandlerFunc) http.HandlerFunc {
 
 		handler := func(w http.ResponseWriter, r *http.Request) {
-			middleWare(w, r)
-			next(w, r)
+			if middleWare(w, r) {
+				next(w, r)
+			} else {
+				return
+			}
+
 		}
 
 		return handler
